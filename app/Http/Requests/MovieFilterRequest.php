@@ -11,7 +11,7 @@ class MovieFilterRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -24,8 +24,8 @@ class MovieFilterRequest extends FormRequest
     public function rules()
     {
         return [
-            'genre_id' => ['nullable', 'int'],
-            'actors' => ['nullable', 'array']
+            'genres' => ['nullable', 'array'],
+            'actors' => ['nullable', 'array'],
         ];
     }
 }

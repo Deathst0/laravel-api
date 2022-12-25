@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class MovieStoreRequest extends FormRequest
 {
@@ -12,31 +13,17 @@ class MovieStoreRequest extends FormRequest
      */
     public function __construct()
     {
-        Validator::extend('valid_actors', function($attribute, $value) {
-           $rules = [
-               'actor_id' => ['required', 'exists:App\Models\Actor,id']
-           ];
+        parent::__construct();
+
+        Validator::extend('valid_actors', function ($attribute, $value) {
+            $rules = ['actor_id' => ['exists:App\Models\Actor,id']];
+
             foreach ($value as $actorId) {
-                $data = [
-                    'actor_id' => $actorId
-                ];
+                $data = ['actor_id' => $actorId];
                 $validator = Validator::make($data, $rules);
                 if ($validator->fails()) {
                     return false;
                 }
-           }
-            return true;
-        });
-        Validator::extend('valid_genres', function($attribute, $value) {
-            $rules = [
-                'genre_id' => ['required', 'exists:App\Models\Genre,id']
-            ];
-            $data = [
-                'genre_id' => $value
-            ];
-            $validator = Validator::make($data, $rules);
-            if($validator->fails()) {
-                return false;
             }
             return true;
         });
@@ -61,7 +48,7 @@ class MovieStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255'],
-            'genre_id' => ['required', 'valid_genres'],
+            'genre_id' => ['required', Rule::excludeIf('exists:App\Models\Genre,id')],
             'actors' => ['required', 'valid_actors'],
         ];
     }

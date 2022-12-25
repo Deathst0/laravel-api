@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\FilterMovieAction;
+use App\Actions\OrderMovieAction;
+use App\Actions\StoreMovieAction;
+use App\Actions\UpdateMovieAction;
 use App\Models\Movie;
 use App\Http\Resources\MovieResource;
 use App\Http\Requests\MovieFilterRequest;
@@ -12,6 +16,19 @@ use Illuminate\Http\Response;
 
 class MovieController extends Controller
 {
+    private StoreMovieAction $storeAction;
+    private UpdateMovieAction $updateAction;
+    private FilterMovieAction $filterAction;
+    private OrderMovieAction $orderAction;
+
+    public function __construct(StoreMovieAction $storeAction, UpdateMovieAction $updateAction, FilterMovieAction $filterAction, OrderMovieAction $orderAction)
+    {
+        $this->storeAction = $storeAction;
+        $this->updateAction = $updateAction;
+        $this->filterAction = $filterAction;
+        $this->orderAction = $orderAction;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,15 +42,12 @@ class MovieController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  MovieStoreRequest  $request
+     * @param MovieStoreRequest $request
      * @return MovieResource
      */
     public function store(MovieStoreRequest $request): MovieResource
     {
-        $created_movies = Movie::create($request->validated());
-        $created_movies->actors()->attach($request['actors']);
-
-        return new MovieResource($created_movies);
+        return $this->storeAction->execute($request);
     }
 
     /**
@@ -48,70 +62,48 @@ class MovieController extends Controller
     }
 
     /**
-     * Display the specified listing of the resource.
-     * @param MovieFilterRequest $request
-     * @return AnonymousResourceCollection
-     */
-    public function filter(MovieFilterRequest $request): AnonymousResourceCollection
-    {
-
-        if($request->filled('actors')) {
-            $movies = Movie::whereHas('actors', function ($query) use ($request) {
-                $query->whereIn('id', $request->actors);
-            })->get();
-        }else {
-            $movies = Movie::all();
-        }
-
-        if($request->filled('genre_id')) {
-            $movies = $movies->where('genre_id', $request->genre_id)->all();
-        }
-
-        return MovieResource::collection($movies);
-    }
-
-    /**
-     * Display the resource with order of the name
-     *
-     * @param MovieOrderRequest|null $dist
-     * @return MovieResource
-     */
-    public function order(?MovieOrderRequest $request): AnonymousResourceCollection
-    {
-        $order = $request?->order;
-        if (!$order) {
-            $order = 'asc';
-        }
-        $orderedMovies = Movie::orderBy('name', $order)->get();
-
-        return MovieResource::collection($orderedMovies);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
-     * @param  MovieStoreRequest $request
-     * @param  Movie $movie
+     * @param MovieStoreRequest $request
+     * @param Movie $movie
      * @return MovieResource
      */
     public function update(MovieStoreRequest $request, Movie $movie): MovieResource
     {
-        $movie->update($request->validated());
-        $movie->actors()->attach($request['actors']);
-
-        return new MovieResource($movie);
+        return $this->updateAction->execute($request, $movie);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Movie $movie
+     * @param Movie $movie
      * @return Response
      */
     public function destroy(Movie $movie): Response
     {
         $movie->delete();
 
-        return response(null, Response::HTTP_NO_CONTENT);
+        return response('deleted succeeded', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Display the specified listing of the resource.
+     * @param MovieFilterRequest $request
+     * @return AnonymousResourceCollection
+     */
+    public function filter(MovieFilterRequest $request): AnonymousResourceCollection
+    {
+        return $this->filterAction->execute($request);
+    }
+
+    /**
+     * Display the resource with order of the name
+     *
+     * @param MovieOrderRequest $request
+     * @return AnonymousResourceCollection
+     */
+    public function order(MovieOrderRequest $request): AnonymousResourceCollection
+    {
+        return $this->orderAction->execute($request);
     }
 }

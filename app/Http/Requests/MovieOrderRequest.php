@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\OrderStringRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MovieOrderRequest extends FormRequest
@@ -24,7 +25,7 @@ class MovieOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'order' => ['nullable', 'max:255'],
+            'order' => ['nullable', 'max:12', new OrderStringRule()],
         ];
     }
 }
