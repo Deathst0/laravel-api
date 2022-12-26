@@ -9,6 +9,9 @@ use Illuminate\Database\Seeder;
 
 class MovieTableSeeder extends Seeder
 {
+    private const ACTOR_AMOUNT = 4;
+    private const MOVIE_AMOUNT = 6;
+
     /**
      * Run the database seeds.
      *
@@ -17,7 +20,9 @@ class MovieTableSeeder extends Seeder
     public function run()
     {
         $movie = Movie::factory()
-            ->has(Actor::factory()->count(4))
+            ->count(self::MOVIE_AMOUNT)
+            ->hasActors(self::ACTOR_AMOUNT)
+            ->hasGenre()
             ->create();
     }
 }

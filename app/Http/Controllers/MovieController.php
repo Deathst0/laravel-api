@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\DeleteMovieAction;
 use App\Actions\FilterMovieAction;
 use App\Actions\OrderMovieAction;
 use App\Actions\StoreMovieAction;
@@ -20,11 +21,13 @@ class MovieController extends Controller
     private UpdateMovieAction $updateAction;
     private FilterMovieAction $filterAction;
     private OrderMovieAction $orderAction;
+    private DeleteMovieAction $deleteAction;
 
-    public function __construct(StoreMovieAction $storeAction, UpdateMovieAction $updateAction, FilterMovieAction $filterAction, OrderMovieAction $orderAction)
+    public function __construct(StoreMovieAction $storeAction, UpdateMovieAction $updateAction, DeleteMovieAction $deleteAction, FilterMovieAction $filterAction, OrderMovieAction $orderAction)
     {
         $this->storeAction = $storeAction;
         $this->updateAction = $updateAction;
+        $this->deleteAction = $deleteAction;
         $this->filterAction = $filterAction;
         $this->orderAction = $orderAction;
     }
@@ -81,9 +84,9 @@ class MovieController extends Controller
      */
     public function destroy(Movie $movie): Response
     {
-        $movie->delete();
+        $this->deleteAction->execute($movie);
 
-        return response('deleted succeeded', Response::HTTP_NO_CONTENT);
+        return response('delete succeeded', Response::HTTP_NO_CONTENT);
     }
 
     /**

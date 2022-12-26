@@ -25,7 +25,7 @@ class MovieOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'order' => ['nullable', 'max:12', new OrderStringRule()],
+            'order' => ['nullable', new OrderStringRule()],
         ];
     }
 }

@@ -8,7 +8,7 @@ class OrderStringRule implements Rule
 {
     public function passes($attribute, $value): bool
     {
-        return $value === 'asc' || $value === 'desc';
+        return ($value === 'asc') || ($value === 'desc');
     }
 
     public function message(): string

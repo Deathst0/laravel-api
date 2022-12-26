@@ -9,6 +9,8 @@ use Illuminate\Database\Seeder;
 
 class GenreTableSeeder extends Seeder
 {
+    private const GENRE_AMOUNT = 7;
+
     /**
      * Run the database seeds.
      *
@@ -17,7 +19,7 @@ class GenreTableSeeder extends Seeder
     public function run()
     {
         $genre = Genre::factory()
-            ->has(Movie::factory()->count(3))
+            ->count(self::GENRE_AMOUNT)
             ->create();
     }
 }

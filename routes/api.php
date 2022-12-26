@@ -14,9 +14,11 @@ use App\Http\Controllers\MovieController;
 |
 */
 
-Route::apiResources([
-    'movies' => MovieController::class,
-]);
+Route::get('movies', [MovieController::class, 'index'])->name('movies');
+Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movie');
+Route::post('movies', [MovieController::class, 'store'])->name('store');
+Route::put('movies/{movie}', [MovieController::class, 'update'])->name('update');
+Route::delete('movies/{movie}', [MovieController::class, 'destroy'])->name('delete');
 
-Route::get('/filtered_movies', [MovieController::class, 'filter']);
-Route::get('/ordered_movies', [MovieController::class, 'order']);
+Route::get('filtered_movies', [MovieController::class, 'filter'])->name('filter');
+Route::get('ordered_movies', [MovieController::class, 'order'])->name('order');

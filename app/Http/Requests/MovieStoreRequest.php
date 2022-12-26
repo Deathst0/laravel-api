@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class MovieStoreRequest extends FormRequest
 {
@@ -48,7 +47,7 @@ class MovieStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255'],
-            'genre_id' => ['required', Rule::excludeIf('exists:App\Models\Genre,id')],
+            'genre_id' => ['required', 'exists:App\Models\Genre,id'],
             'actors' => ['required', 'valid_actors'],
         ];
     }

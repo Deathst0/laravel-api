@@ -13,6 +13,7 @@ class UpdateMovieAction
         $movie->update($request->validated());
 
         if ($request->filled('actors')) {
+            $movie->actors()->detach();
             $movie->actors()->attach($request->actors);
         }
 
